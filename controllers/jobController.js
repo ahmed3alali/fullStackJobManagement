@@ -39,23 +39,14 @@ res.status(StatusCodes.OK).json({msg:'job modified',job:updatedJob});
 
 // Get all jobs (MongoDB)
 export const getAllJobs = async (req, res) => {
-console.log(req.user);
-
-const jobs = await Job.find({createdBy:req.user.userId});
-res.status(StatusCodes.OK).json({jobs});
-
-
-
-
+  console.log(req.user);
+  const jobs = await Job.find({ createdBy: req.user.userId });
+  res.status(StatusCodes.OK).json({ jobs });
 };
 
 // Create a new job (MongoDB)
 export const createJob = async (req, res) => {
   req.body.createdBy = req.user.userId;
-  try {
-    const job = await Job.create(req.body);
-    res.status(201).json({ job });
-  } catch (error) {
-    res.status(500).json({ msg: 'Server error', error });
-  }
+  const job = await Job.create(req.body);
+  res.status(StatusCodes.CREATED).json({ job });
 };

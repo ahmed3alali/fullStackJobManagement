@@ -1,66 +1,74 @@
-
-
-
 import { StatusCodes } from "http-status-codes";
-
 import User from "../models/UserModel.js";
-
-import bcrypt from "bcryptjs/dist/bcrypt.js";
+import bcrypt from "bcryptjs";
 import { UnauthenticatedError } from "../errors/customErrors.js";
-import { comparePassword, hashPassword } from "../utils/passwordUtils.js";
+import { comparePassword } from "../utils/passwordUtils.js";
 import { createJWT } from "../utils/tokenUtils.js";
 
+export const register = async (req, res) => {
+    try {
+        const isFirstAccount = await User.countDocuments() === 0;
+        req.body.role = isFirstAccount ? 'admin' : 'user';
 
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        req.body.password = hashedPassword;
 
+        const user = await User.create(req.body);
+        res.status(StatusCodes.CREATED).json({ msg: 'User created', userId: user._id });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Error creating user', error: error.message });
+    }
+};
 
+export const login = async (req, res) => {
+    try {
+        // Find the user by email
+        const user = await User.findOne({ email: req.body.email });
 
-export const register = async(req,res) => {
-const isFirstAccount =await User.countDocuments()===0
+        if (!user) throw new UnauthenticatedError('Invalid user');
 
-req.body.role = isFirstAccount?'admin':'user';
+        // Compare the provided password with the stored hashed password
+        const isPasswordCorrect = await comparePassword(req.body.password, user.password);
+        if (!isPasswordCorrect) throw new UnauthenticatedError('Wrong password!');
 
-const salt = await bcrypt.genSalt(10);
-const hashedPassword = await bcrypt.hash(req.body.password,salt);
-req.body.password = hashedPassword;
-const user = await User.create(req.body);
-res.status(StatusCodes.CREATED).json({msg: 'user created'});
+        // Create a token
+        const token = createJWT({ userId: user._id, role: user.role });
 
+        // Set the token in a cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Set to true in production for secure cookies
+            maxAge: 1000 * 60 * 60 * 24, // Cookie expiration time (1 day)
+        });
 
-res.send('register');
-
-
+        res.status(StatusCodes.OK).json({ msg: 'User logged in', userId: user._id });
+    } catch (error) {
+        if (error instanceof UnauthenticatedError) {
+            res.status(StatusCodes.UNAUTHORIZED).json({ msg: error.message });
+        } else {
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Error logging in', error: error.message });
+        }
+    }
 };
 
 
 
+export const logout= (req,res)=>  {
 
-
-export const login = async(req,res) =>{
-
-const user = await User.findOne({email:req.body.email})
-
-if (!user) throw new UnauthenticatedError('invalid user')
-
-const isPasswordCorrect = await comparePassword(req.body.password,user.password)
-
-
-if(!isPasswordCorrect) throw new UnauthenticatedError('wrong password!')
-
-    
-
-
-const oneDay = 1000*60*60*24;
-
-const token = createJWT({userId:user._id, role: user.role});
-res.cookie('token',token,{
+    res.cookie('token','logout', {
 
 
 httpOnly:true,
-expires: new Date(Date.now()+oneDay),
-secure: process.env.NODE_ENV==='production'
+expires:new Date(Date.now()),
 
 
-})
-res.status(StatusCodes.OK).json({msg:'user logged in '})
 
-};
+    });
+
+    res.status(StatusCodes.OK).json({msg:"User logged out!"});
+
+
+
+
+}

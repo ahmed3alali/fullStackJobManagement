@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 
 // Use the job router for job-related routes
 app.use('/api/v1/jobs', authenticateUser,jobRouter); // Ensure this line is correct
-app.use('/api/v1/auth',authenticateUser, authRouter);
+app.use('/api/v1/auth', authRouter);
 
 
 
