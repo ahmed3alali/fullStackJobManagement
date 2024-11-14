@@ -1,7 +1,7 @@
   import 'express-async-errors';
   import * as dotenv from 'dotenv';
   import cookieParser from 'cookie-parser';
-
+  import cors from 'cors';
   dotenv.config();
   import express from 'express';
   const app = express();
@@ -29,8 +29,10 @@
   app.get('/', (req, res) => {
     res.send('Hello World');
   });
-//d
 
+  app.get('/api/v1/test', (req, res) => {
+    res.json({ msg: 'test route' });
+  });
 
   // Use the job router for job-related routes
   app.use('/api/v1/jobs', authenticateUser,jobRouter); // Ensure this line is correct
@@ -114,7 +116,14 @@
   const port = process.env.PORT || 5173;
 
 
+ 
 
+  app.use(cors({
+    origin: 'http://localhost:5173', // Frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true, // Allow cookies (if using cookies for authentication)
+  }));
+  
 
   try {
 
