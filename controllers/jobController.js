@@ -50,3 +50,12 @@ export const createJob = async (req, res) => {
   const job = await Job.create(req.body);
   res.status(StatusCodes.CREATED).json({ job });
 };
+
+
+export const deleteJob = async (req,res) => {
+
+const removedJob = await Job.findByIdAndDelete({msg: "Job has been succesfully deleted", job:removedJob})
+
+
+
+}

@@ -44,4 +44,15 @@ role:{
 
 });
 
+
+UserSchema.methods.toJSON = function name(params) {
+  
+  let obj = this.toObject();
+  delete obj.password;
+  return obj;
+
+
+};
+
+
 export default mongoose.model('User',UserSchema);

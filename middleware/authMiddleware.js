@@ -1,8 +1,8 @@
 // middleware/authMiddleware.js
-import { UnauthenticatedError } from '../errors/customErrors.js'; // Ensure this path is correct
+import { UnauthenticatedError, UnauthorizedError } from '../errors/customErrors.js'; // Ensure this path is correct
 import { verifyJWT } from '../utils/tokenUtils.js';
 
-export const authenticateUser = async (req, res, next) => {
+export const authenticateUser =  (req, res, next) => {
   const { token } = req.cookies;
   console.log('Token:', token); // Log the token for debugging
   if (!token) {
@@ -18,3 +18,21 @@ export const authenticateUser = async (req, res, next) => {
     throw new UnauthenticatedError('authentication invalid');
   }
 };
+
+
+export const authorizePermissions = (...roles)=>{
+
+
+
+return (req,res,next) => {
+  if (!roles.includes(req.user.role)) {
+    throw new UnauthorizedError('Unauthorized to access the route')
+  }
+  console.log(roles);
+  next();
+
+
+}
+
+
+}

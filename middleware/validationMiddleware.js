@@ -123,3 +123,39 @@ export const validateLoginInput = withValidationErrors([
     .notEmpty().withMessage('password is required')
 
 ]);
+
+
+export const validateUpdateUserInput = withValidationErrors([
+
+  body('name').notEmpty().withMessage('name is required'),
+  body('email')
+    .notEmpty().withMessage('email is required')
+    .isEmail().withMessage('invalid email')
+    .custom(async (email) => {
+      try {
+        const user = await User.findOne({ email });
+
+        if (user && user_id.toString()!= req.user.userId)  {
+          throw new BadRequestError('email already exists!!');
+        }
+      } catch (error) {
+        console.log('Error during email validation:', error); // Debug log
+
+
+  
+
+
+        console.log("check of the login sucess");
+        
+        
+
+        throw error;
+
+      }
+    }),
+  
+  body('location').notEmpty().withMessage('location is required'),
+
+
+
+])
