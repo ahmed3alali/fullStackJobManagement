@@ -57,7 +57,7 @@ const router = createBrowserRouter([
         element: <Landing />,
       },
       {
-        path: 'register',
+        path: '/register',
         element: <Register />,
         action: registerAction,
       },
