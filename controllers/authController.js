@@ -33,34 +33,33 @@ res.send('register');
 
 
 
-export const login = async(req,res) =>{
 
-const user = await User.findOne({email:req.body.email})
+export const login = async (req, res) => {
+  const { email, password } = req.body;
 
-if (!user) throw new UnauthenticatedError('invalid user')
+  if (!email || !password) {
+    throw new UnauthenticatedError('Please provide email and password');
+  }
 
-const isPasswordCorrect = await comparePassword(req.body.password,user.password)
+  const user = await User.findOne({ email });
 
+  if (!user) {
+    throw new UnauthenticatedError('Invalid Credentials');
+  }
 
-if(!isPasswordCorrect) throw new UnauthenticatedError('wrong password!')
+  const isPasswordCorrect = await user.comparePassword(password);
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError('Invalid Credentials');
+  }
 
-    
-
-
-const oneDay = 1000*60*60*24;
-
-const token = createJWT({userId:user._id, role: user.role});
-res.cookie('token',token,{
-
-
-httpOnly:true,
-expires: new Date(Date.now()+oneDay),
-secure: process.env.NODE_ENV==='production'
-
-
-})
-res.status(StatusCodes.OK).json({msg:'user logged in '})
-
+  const token = createJWT({ userId: user._id, role: user.role });
+  res
+    .cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    })
+    .status(200)
+    .json({ msg: 'Login successful', user: { name: user.name, email: user.email } });
 };
 
 
