@@ -62,3 +62,13 @@ secure: process.env.NODE_ENV==='production'
 res.status(StatusCodes.OK).json({msg:'user logged in '})
 
 };
+
+
+export const logout = async (req, res) => {
+    res.cookie('token', '', {
+      httpOnly: true,
+      expires: new Date(0), // Immediately expire the cookie
+    });
+    res.status(StatusCodes.OK).json({ msg: 'User logged out successfully' });
+  };
+  

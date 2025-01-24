@@ -52,10 +52,6 @@ const router = createBrowserRouter([
     element: <HomeLayout />,
     errorElement: <Error />,
     children: [
-
-
-
-      
       {
         index: true,
         element: <Landing />,
@@ -68,7 +64,7 @@ const router = createBrowserRouter([
       {
         path: 'login',
         element: <Login />,
-        action: loginAction(queryClient),
+        action: loginAction,
       },
       {
         path: '/dashboard',
@@ -81,8 +77,7 @@ const router = createBrowserRouter([
             action: addJobAction(queryClient),
           },
           {
-            path: '/status', // this info to be checked later
-            
+            path: 'stats',
             element: <Stats />,
             loader: statsLoader(queryClient),
             errorElement: <ErrorElement />,
@@ -125,3 +120,4 @@ const App = () => {
   );
 };
 export default App;
+
