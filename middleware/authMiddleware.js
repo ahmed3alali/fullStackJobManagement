@@ -1,10 +1,41 @@
-// middleware/authMiddleware.js
-import { UnauthenticatedError, UnauthorizedError } from '../errors/customErrors.js'; // Ensure this path is correct
-import { verifyJWT } from '../utils/tokenUtils.js';
+import { UnauthenticatedError } from "../errors/customErrors.js";
+import { verifyJWT } from "../utils/tokenUtils.js";
 
-export const authenticateUser =  (req, res, next) => {
+UnauthenticatedError
+
+
+
+
+// Middleware to check user role
+export const authorizePermissions = (requiredRole) => {
+  return (req, res, next) => {
+    if (!req.user || req.user.role !== requiredRole) {
+    console.log("error");
+    }
+    next();
+  };
+};
+
+export const checkForTestUser = (req, res, next) => {
+  if (req.user && req.user.userId === "test-user-id") {
+    throw new BadRequestError("Test User. Read-only operation not allowed.");
+  }
+  next();
+};
+
+export const validateUpdateUserInput = (req, res, next) => {
+  const { name, email } = req.body;
+
+  if (!name || !email) {
+    console.log("error");
+  }
+
+  // Add any additional validation logic here
+  next();
+};
+
+export const authenticateUser = async (req, res, next) => {
   const { token } = req.cookies;
-  console.log('Token:', token); // Log the token for debugging
   if (!token) {
     throw new UnauthenticatedError('authentication invalid');
   }
@@ -14,25 +45,9 @@ export const authenticateUser =  (req, res, next) => {
     req.user = { userId, role };
     next();
   } catch (error) {
-    console.error('Token verification failed:', error); // Log the error for debugging
     throw new UnauthenticatedError('authentication invalid');
   }
 };
 
 
-export const authorizePermissions = (...roles)=>{
 
-
-
-return (req,res,next) => {
-  if (!roles.includes(req.user.role)) {
-    throw new UnauthorizedError('Unauthorized to access the route')
-  }
-  console.log(roles);
-  next();
-
-
-}
-
-
-}

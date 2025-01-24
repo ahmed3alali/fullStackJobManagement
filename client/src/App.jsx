@@ -52,6 +52,10 @@ const router = createBrowserRouter([
     element: <HomeLayout />,
     errorElement: <Error />,
     children: [
+
+
+
+      
       {
         index: true,
         element: <Landing />,
@@ -77,7 +81,8 @@ const router = createBrowserRouter([
             action: addJobAction(queryClient),
           },
           {
-            path: 'stats',
+            path: '/status', // this info to be checked later
+            
             element: <Stats />,
             loader: statsLoader(queryClient),
             errorElement: <ErrorElement />,

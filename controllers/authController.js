@@ -8,9 +8,9 @@ import { createJWT } from "../utils/tokenUtils.js";
 export const register = async (req, res) => {
     try {
         const isFirstAccount = await User.countDocuments() === 0;
-        req.body.role = isFirstAccount ? 'admin' : 'user';
+        req.body.role = isFirstAccount ? 'admin' : 'us';
 
-        // Hash the password
+        // Hash the passwordx by setting unvieed   
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         req.body.password = hashedPassword;
 
@@ -21,8 +21,14 @@ export const register = async (req, res) => {
     }
 };
 
+
+
+
 export const login = async (req, res) => {
     try {
+
+const user = await.
+
         // Find the user by email
         const user = await User.findOne({ email: req.body.email });
 
