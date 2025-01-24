@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose'; // Ensure mongoose is imported
 import jobRouter from './routes/jobRouter.js'; // Make sure this path is correct
 import authRouter from './routes/authRouter.js';
-import userRouter from './routes/userRouter.js';
+
 
 
 // Middleware
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/jobs', authenticateUser,jobRouter); // Ensure this line is correct
 app.use('/api/v1/auth', authRouter);
 
-app.use(userRouter.prefix, userRouter.router);
+
 
 /// get a single job
 
